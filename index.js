@@ -117,7 +117,7 @@ class SMS {
             from = this.defaultFrom;
         }
         let response = await this.axios.post(
-            `${this.baseUrl}/sms/${this.version}/text/single`,
+            `${this.baseUrl}/sms/1/text/single`,
             {
                 from: from,
                 to: to,
@@ -139,7 +139,7 @@ class SMS {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
         }
-        let response = await this.axios.get(`${this.baseUrl}/sms/${this.version}/reports?messageId=${messageId}`);
+        let response = await this.axios.get(`${this.baseUrl}/sms/1/reports?messageId=${messageId}`);
         return response.data;
     }
 
