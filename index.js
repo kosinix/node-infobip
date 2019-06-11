@@ -6,6 +6,33 @@ const axios = require('axios');
 //// Modules
 
 /**
+ * Checking the service status
+ * 
+ * @example
+ * let infobip = require('node-infobip');
+ * let status = await infobip.status();
+ * console.log(status);
+ * 
+ * 
+ * @param {string} baseUrl Infobip personal base URL
+ * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
+ * 
+ * @returns {string} String in JSON or XML
+ */
+async function status(contentType = 'json', baseUrl = 'https://api.infobip.com') {
+    let accept = 'application/json'
+    if (contentType === 'xml') {
+        accept = 'application/xml'
+    }
+    let response = await axios.get(`${baseUrl}/status`, {
+        headers: {
+            'Accept': accept
+        }
+    });
+    return response.data;
+}
+
+/**
  * Infobip
  * 
  * @example 
@@ -71,7 +98,7 @@ class SMS {
         return response.data;
 
     }
-    
+
     /**
      * Authorize API calls
      * 
@@ -147,5 +174,6 @@ class SMS {
 }
 
 module.exports = {
+    status: status,
     SMS: SMS,
 }
