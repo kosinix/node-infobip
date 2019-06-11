@@ -39,7 +39,7 @@ class SMS {
      * @param {number} version API version 1 or 2
      * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
      */
-    constructor(defaultFrom = 'INFO', baseUrl = 'https://api.infobip.com', version = 2, contentType = 'json') {
+    constructor(defaultFrom = 'INFO', baseUrl = 'https://api.infobip.com', version = 1, contentType = 'json') {
         if (version < 1 || version > 2) {
             throw new Error('Invalid version number.')
         }
@@ -117,7 +117,7 @@ class SMS {
             from = this.defaultFrom;
         }
         let response = await this.axios.post(
-            `${this.baseUrl}/sms/1/text/single`,
+            `${this.baseUrl}/sms/${this.version}/text/single`,
             {
                 from: from,
                 to: to,
@@ -139,7 +139,7 @@ class SMS {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
         }
-        let response = await this.axios.get(`${this.baseUrl}/sms/1/reports?messageId=${messageId}`);
+        let response = await this.axios.get(`${this.baseUrl}/sms/${this.version}/reports?messageId=${messageId}`);
         return response.data;
     }
 
