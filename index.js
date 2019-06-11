@@ -20,16 +20,20 @@ const axios = require('axios');
  * @returns {string} String in JSON or XML
  */
 async function status(contentType = 'json', baseUrl = 'https://api.infobip.com') {
-    let accept = 'application/json'
-    if (contentType === 'xml') {
-        accept = 'application/xml'
-    }
-    let response = await axios.get(`${baseUrl}/status`, {
-        headers: {
-            'Accept': accept
+    try {
+        let accept = 'application/json'
+        if (contentType === 'xml') {
+            accept = 'application/xml'
         }
-    });
-    return response.data;
+        let response = await axios.get(`${baseUrl}/status`, {
+            headers: {
+                'Accept': accept
+            }
+        });
+        return response.data;
+    } catch (err) {
+        throw trimError(err)
+    }
 }
 
 /**
@@ -86,17 +90,20 @@ class SMS {
      * @returns {Object} Axios response.data
      */
     async status() {
-        let accept = 'application/json'
-        if (this.contentType === 'xml') {
-            accept = 'application/xml'
-        }
-        let response = await axios.get(`${this.baseUrl}/status`, {
-            headers: {
-                'Accept': accept
+        try {
+            let accept = 'application/json'
+            if (this.contentType === 'xml') {
+                accept = 'application/xml'
             }
-        });
-        return response.data;
-
+            let response = await axios.get(`${this.baseUrl}/status`, {
+                headers: {
+                    'Accept': accept
+                }
+            });
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
+        }
     }
 
     /**
@@ -138,21 +145,25 @@ class SMS {
      * @returns {Object} Axios response.data
      */
     async single(to, text, from = '') {
-        if (!this.axios) {
-            throw new Error('Unauthorized API call.')
-        }
-        if (!from) {
-            from = this.defaultFrom;
-        }
-        let response = await this.axios.post(
-            `${this.baseUrl}/sms/${this.version}/text/single`,
-            {
-                from: from,
-                to: to,
-                text: text
+        try {
+            if (!this.axios) {
+                throw new Error('Unauthorized API call.')
             }
-        );
-        return response.data;
+            if (!from) {
+                from = this.defaultFrom;
+            }
+            let response = await this.axios.post(
+                `${this.baseUrl}/sms/${this.version}/text/single`,
+                {
+                    from: from,
+                    to: to,
+                    text: text
+                }
+            );
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
+        }
     }
 
 
@@ -164,11 +175,15 @@ class SMS {
      * @returns {Object} Axios response.data
      */
     async getReportByMessageId(messageId) {
-        if (!this.axios) {
-            throw new Error('Unauthorized API call.')
+        try {
+            if (!this.axios) {
+                throw new Error('Unauthorized API call.')
+            }
+            let response = await this.axios.get(`${this.baseUrl}/sms/${this.version}/reports?messageId=${messageId}`);
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
         }
-        let response = await this.axios.get(`${this.baseUrl}/sms/${this.version}/reports?messageId=${messageId}`);
-        return response.data;
     }
 
 }
@@ -251,17 +266,21 @@ class Settings {
      * @throws {Error}
      */
     async getApiKeys(enabled = '') {
-        if (!this.axios) {
-            throw new Error('Unauthorized API call.')
-        }
+        try {
+            if (!this.axios) {
+                throw new Error('Unauthorized API call.')
+            }
 
-        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys`
+            let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys`
 
-        if (enabled) {
-            endPoint += `?enabled=${enabled}`
+            if (enabled) {
+                endPoint += `?enabled=${enabled}`
+            }
+            let response = await this.axios.get(endPoint);
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
         }
-        let response = await this.axios.get(endPoint);
-        return response.data;
     }
 
 
@@ -274,18 +293,21 @@ class Settings {
      * @throws {Error}
      */
     async getApiKey(key) {
-        if (!this.axios) {
-            throw new Error('Unauthorized API call.')
-        }
-        if (!key) {
-            throw new Error('Please provide a key.')
-        }
+        try {
+            if (!this.axios) {
+                throw new Error('Unauthorized API call.')
+            }
+            if (!key) {
+                throw new Error('Please provide a key.')
+            }
 
-        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys/${key}`
+            let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys/${key}`
 
-        let response = await this.axios.get(endPoint);
-        return response.data;
-        
+            let response = await this.axios.get(endPoint);
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
+        }
     }
 
 
@@ -335,7 +357,33 @@ class Settings {
 
 }
 
+/**
+ * Axios returns a lengthy error message. Trim it down to just the result data.
+ * @param {*} error 
+ */
+function trimError(error) {
+    let errorValue = error;
+    if (error instanceof Error) {
+        if (error.response) { // This is axios
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            if (error.response.data) {
+                errorValue = error.response.data
+            } else {
+                errorValue = error.response
+            }
+        } else if (error.request) { // This is axios
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            errorValue = error.request
+        } else { // Regular error
+            errorValue = error;
+        }
+    }
 
+    return errorValue
+}
 module.exports = {
     status: status,
     Settings: Settings,
