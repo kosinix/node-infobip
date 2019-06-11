@@ -114,23 +114,7 @@ class SMS {
      * @param {string} password 
      */
     authorize(authType, tokenKeyOrUsername, password = '') {
-        if (!['App', 'Basic', 'IBSSO'].includes(authType)) {
-            throw new Error('Invalid authorization type.')
-        }
-        if (authType === 'Basic') {
-            tokenKeyOrUsername = Buffer.from(`${tokenKeyOrUsername}:${password}`).toString('base64')
-        }
-        let accept = 'application/json'
-        if (this.contentType === 'xml') {
-            accept = 'application/xml'
-        }
-        this.axios = axios.create({
-            headers: {
-                'Authorization': `${authType} ${tokenKeyOrUsername}`,
-                'Content-Type': accept,
-                'Accept': accept
-            }
-        });
+        this.axios = authorize(authType, tokenKeyOrUsername, password, this.contentType)
     }
 
     /**
@@ -238,23 +222,7 @@ class Settings {
      * @param {string} password 
      */
     authorize(authType, tokenKeyOrUsername, password = '') {
-        if (!['App', 'Basic', 'IBSSO'].includes(authType)) {
-            throw new Error('Invalid authorization type.')
-        }
-        if (authType === 'Basic') {
-            tokenKeyOrUsername = Buffer.from(`${tokenKeyOrUsername}:${password}`).toString('base64')
-        }
-        let accept = 'application/json'
-        if (this.contentType === 'xml') {
-            accept = 'application/xml'
-        }
-        this.axios = axios.create({
-            headers: {
-                'Authorization': `${authType} ${tokenKeyOrUsername}`,
-                'Content-Type': accept,
-                'Accept': accept
-            }
-        });
+        this.axios = authorize(authType, tokenKeyOrUsername, password, this.contentType)
     }
 
     /**
@@ -358,8 +326,39 @@ class Settings {
 }
 
 /**
+ * Authorize API calls
+ * 
+ * @param {string} authType 
+ * @param {string} tokenKeyOrUsername 
+ * @param {string} password 
+ * @param {string} contentType 
+ * @returns {Object} Instance of axios
+ * @throws {Error}
+ */
+function authorize(authType, tokenKeyOrUsername, password = '', contentType = 'json') {
+    if (!['App', 'Basic', 'IBSSO'].includes(authType)) {
+        throw new Error('Invalid authorization type.')
+    }
+    if (authType === 'Basic') {
+        tokenKeyOrUsername = Buffer.from(`${tokenKeyOrUsername}:${password}`).toString('base64')
+    }
+    let accept = 'application/json'
+    if (contentType === 'xml') {
+        accept = 'application/xml'
+    }
+    return axios.create({
+        headers: {
+            'Authorization': `${authType} ${tokenKeyOrUsername}`,
+            'Content-Type': accept,
+            'Accept': accept
+        }
+    });
+}
+
+/**
  * Axios returns a lengthy error message. Trim it down to just the result data.
  * @param {*} error 
+ * @returns {*} 
  */
 function trimError(error) {
     let errorValue = error;
