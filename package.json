@@ -4,7 +4,7 @@
   "description": "Node.js module for infobip api",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test/test.js",
     "docs": "jsdoc -d docs/api index.js"
   },
   "repository": {
