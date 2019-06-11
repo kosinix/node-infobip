@@ -13,7 +13,7 @@ const axios = require('axios');
  * let infobip = require('node-infobip');
  * 
  * // Instantiate SMS module. Specify Sender ID and Base URL
- * let sms = new infobip.SMS('Easycash', 'https://api.infobip.com');
+ * let sms = new infobip.SMS('CompanyA', 'https://api.infobip.com');
  * 
  * // Basic authorization
  * sms.authorize('Basic', 'username', 'password');
