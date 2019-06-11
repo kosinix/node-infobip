@@ -306,6 +306,7 @@ class Settings {
 /**
  * Authorize API calls
  * 
+ * @private
  * @param {string} authType 
  * @param {string} tokenKeyOrUsername 
  * @param {string} password 
@@ -335,6 +336,8 @@ function authorize(authType, tokenKeyOrUsername, password = '', contentType = 'j
 
 /**
  * Axios returns a lengthy error message. Trim it down to just the result data.
+ * 
+ * @private
  * @param {*} error 
  * @returns {*} 
  */
