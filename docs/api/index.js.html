@@ -34,13 +34,43 @@ const axios = require('axios');
 //// Modules
 
 /**
- * Infobip
+ * Checking the service status
+ * 
+ * @example
+ * let infobip = require('node-infobip');
+ * let status = await infobip.status();
+ * console.log(status);
+ * 
+ * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
+ * @param {string} baseUrl Infobip personal base URL
+ * 
+ * @returns {string} String in JSON or XML
+ */
+async function status(contentType = 'json', baseUrl = 'https://api.infobip.com') {
+    try {
+        let accept = 'application/json'
+        if (contentType === 'xml') {
+            accept = 'application/xml'
+        }
+        let response = await axios.get(`${baseUrl}/status`, {
+            headers: {
+                'Accept': accept
+            }
+        });
+        return response.data;
+    } catch (err) {
+        throw trimError(err)
+    }
+}
+
+/**
+ * Class for SMS service
  * 
  * @example 
  * // Include module
  * let infobip = require('node-infobip');
  * 
- * // Instantiate SMS module. Specify Sender ID and Base URL
+ * // Instantiate SMS class. Specify Sender ID and Base URL
  * let sms = new infobip.SMS('CompanyA', 'https://api.infobip.com');
  * 
  * // Basic authorization
@@ -61,13 +91,14 @@ const axios = require('axios');
  */
 class SMS {
     /**
+     * Instantiate SMS class
      * 
      * @param {string} defaultFrom Represents a sender ID which can be alphanumeric or numeric
      * @param {string} baseUrl Infobip personal base URL
      * @param {number} version API version 1 or 2
      * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
      */
-    constructor(defaultFrom = 'INFO', baseUrl = 'https://api.infobip.com', version = 2, contentType = 'json') {
+    constructor(defaultFrom = 'INFO', baseUrl = 'https://api.infobip.com', version = 1, contentType = 'json') {
         if (version &lt; 1 || version > 2) {
             throw new Error('Invalid version number.')
         }
@@ -82,25 +113,6 @@ class SMS {
     }
 
     /**
-     * Get API status
-     * 
-     * @returns {Object} Axios response.data
-     */
-    async status() {
-        let accept = 'application/json'
-        if (this.contentType === 'xml') {
-            accept = 'application/xml'
-        }
-        let response = await axios.get(`${this.baseUrl}/status`, {
-            headers: {
-                'Accept': accept
-            }
-        });
-        return response.data;
-
-    }
-    
-    /**
      * Authorize API calls
      * 
      * @param {string} authType 
@@ -108,22 +120,7 @@ class SMS {
      * @param {string} password 
      */
     authorize(authType, tokenKeyOrUsername, password = '') {
-        if (!['App', 'Basic', 'IBSSO'].includes(authType)) {
-            throw new Error('Invalid authorization type.')
-        }
-        if (authType === 'Basic') {
-            tokenKeyOrUsername = Buffer.from(`${tokenKeyOrUsername}:${password}`).toString('base64')
-        }
-        let accept = 'application/json'
-        if (this.contentType === 'xml') {
-            accept = 'application/xml'
-        }
-        this.axios = axios.create({
-            headers: {
-                'Authorization': `${authType} ${tokenKeyOrUsername}`,
-                'Accept': accept
-            }
-        });
+        this.axios = authorize(authType, tokenKeyOrUsername, password, this.contentType)
     }
 
     /**
@@ -138,21 +135,25 @@ class SMS {
      * @returns {Object} Axios response.data
      */
     async single(to, text, from = '') {
-        if (!this.axios) {
-            throw new Error('Unauthorized API call.')
-        }
-        if (!from) {
-            from = this.defaultFrom;
-        }
-        let response = await this.axios.post(
-            `${this.baseUrl}/sms/${this.version}/text/single`,
-            {
-                from: from,
-                to: to,
-                text: text
+        try {
+            if (!this.axios) {
+                throw new Error('Unauthorized API call.')
             }
-        );
-        return response.data;
+            if (!from) {
+                from = this.defaultFrom;
+            }
+            let response = await this.axios.post(
+                `${this.baseUrl}/sms/${this.version}/text/single`,
+                {
+                    from: from,
+                    to: to,
+                    text: text
+                }
+            );
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
+        }
     }
 
 
@@ -164,16 +165,311 @@ class SMS {
      * @returns {Object} Axios response.data
      */
     async getReportByMessageId(messageId) {
-        if (!this.axios) {
-            throw new Error('Unauthorized API call.')
+        try {
+            if (!this.axios) {
+                throw new Error('Unauthorized API call.')
+            }
+            let response = await this.axios.get(`${this.baseUrl}/sms/${this.version}/reports?messageId=${messageId}`);
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
         }
-        let response = await this.axios.get(`${this.baseUrl}/sms/${this.version}/reports?messageId=${messageId}`);
-        return response.data;
     }
 
 }
 
+/**
+ * Class for Account service use in managing API keys 
+ * 
+ * @example 
+ * // Include module
+ * let infobip = require('node-infobip');
+ * 
+ * // Instantiate Settings class
+ * let settings = new infobip.Settings()
+ * 
+ * // Authorize using Basic. We can swap this later with App authorization
+ * settings.authorize('Basic', 'username', 'password')
+ * 
+ * // List all API keys
+ * console.log(await settings.getApiKeys())
+ * 
+ * // Get API key with property key "abc"
+ * console.log(await settings.getApiKey('abc'))
+ * 
+ * // Get API key with property publicApiKey "abc"
+ * console.log(await settings.getApiKeyByPublicKey('abc'))
+ * 
+ * // Get API key with property name "live-server"
+ * console.log(await settings.getApiKeyByName('live-server'))
+ * 
+ */
+class Settings {
+
+    /**
+     * Instantiate Settings class
+     * 
+     * @param {string} accountKey Key used to uniquely identify the account. Use _ as parameter value for your current account or account key for sub accounts.
+     * @param {string} baseUrl Infobip personal base URL
+     * @param {number} version API version 1 or 2
+     * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
+     */
+    constructor(accountKey = '_', baseUrl = 'https://api.infobip.com', version = 1, contentType = 'json') {
+        if (version &lt; 1 || version > 2) {
+            throw new Error('Invalid version number.')
+        }
+        if (!(contentType === 'json' || contentType === 'xml')) {
+            throw new Error('Invalid content type.')
+        }
+        this.baseUrl = baseUrl;
+        this.version = version;
+        this.accountKey = accountKey;
+        this.contentType = contentType;
+        this.axios = null;
+    }
+
+    /**
+     * Authorize API calls
+     * 
+     * @param {string} authType 
+     * @param {string} tokenKeyOrUsername 
+     * @param {string} password 
+     */
+    authorize(authType, tokenKeyOrUsername, password = '') {
+        this.axios = authorize(authType, tokenKeyOrUsername, password, this.contentType)
+    }
+
+    /**
+     * List all API keys
+     * 
+     * @param {string} enabled Filter enabled keys. Values: "true" or "false".
+     * 
+     * @returns {Object}
+     * @throws {Error}
+     */
+    async getApiKeys(enabled = '') {
+        try {
+            if (!this.axios) {
+                throw new Error('Unauthorized API call.')
+            }
+
+            let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys`
+
+            if (enabled) {
+                endPoint += `?enabled=${enabled}`
+            }
+            let response = await this.axios.get(endPoint);
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
+        }
+    }
+
+
+    /**
+     * Get an API key by its key
+     * 
+     * @param {string} key Key (unique ID) of the API key.
+     * 
+     * @returns {Object}
+     * @throws {Error}
+     */
+    async getApiKey(key) {
+        try {
+            if (!this.axios) {
+                throw new Error('Unauthorized API call.')
+            }
+            if (!key) {
+                throw new Error('Please provide a key.')
+            }
+
+            let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys/${key}`
+
+            let response = await this.axios.get(endPoint);
+            return response.data;
+        } catch (err) {
+            throw trimError(err)
+        }
+    }
+
+
+    /**
+     * Get an API key by its public API key
+     * 
+     * @param {string} key Public API key of the API key.
+     * 
+     * @returns {Object}
+     * @throws {Error}
+     */
+    async getApiKeyByPublicKey(key) {
+        if (!this.axios) {
+            throw new Error('Unauthorized API call.')
+        }
+        if (!key) {
+            throw new Error('Please provide a key.')
+        }
+
+        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys?publicApiKey=${key}`
+
+        let response = await this.axios.get(endPoint);
+        return response.data;
+    }
+
+    /**
+     * Get an API key by its name
+     * 
+     * @param {string} name Name of the API key.
+     * 
+     * @returns {Object}
+     * @throws {Error}
+     */
+    async getApiKeyByName(name) {
+        if (!this.axios) {
+            throw new Error('Unauthorized API call.')
+        }
+        if (!name) {
+            throw new Error('Please provide a name.')
+        }
+
+        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys?name=${name}`
+
+        let response = await this.axios.get(endPoint);
+        return response.data;
+    }
+
+    /**
+     * Create an API key
+     * 
+     * @param {Object} params The API key properties
+     * 
+     * @returns {Object}
+     * @throws {Error}
+     * 
+     * @example
+     * 
+     * console.log(await settings.newApiKey({
+     *  "name": "Api key 1",
+     *  "allowedIPs": [],
+     *  "permissions": [
+     *      "ALL"
+     *  ]
+     * }))
+     */
+    async newApiKey(params) {
+        if (!this.axios) {
+            throw new Error('Unauthorized API call.')
+        }
+        if (!params) {
+            throw new Error('Please provide params.')
+        }
+
+        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys`
+
+        let response = await this.axios.post(endPoint, params);
+        return response.data;
+    }
+
+    /**
+     * Update an API key
+     * 
+     * @param {string} key Key (unique ID) of the API key.
+     * @param {Object} params The API key properties to update
+     * 
+     * @returns {Object}
+     * @throws {Error}
+     * 
+     * @example
+     * 
+     * console.log(await settings.updateApiKey('abc', {
+     *  "name": "Api key 2",
+     *  "allowedIPs": ['127.0.0.1']
+     * }))
+     */
+    async updateApiKey(key, params) {
+        if (!this.axios) {
+            throw new Error('Unauthorized API call.')
+        }
+        if (!key) {
+            throw new Error('Please provide a key.')
+        }
+        if (!params) {
+            throw new Error('Please provide params.')
+        }
+
+        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys/${key}`
+
+        let response = await this.axios.put(endPoint, params);
+        return response.data;
+    }
+
+
+
+}
+
+/**
+ * Authorize API calls
+ * 
+ * @private
+ * @param {string} authType 
+ * @param {string} tokenKeyOrUsername 
+ * @param {string} password 
+ * @param {string} contentType 
+ * @returns {Object} Instance of axios
+ * @throws {Error}
+ */
+function authorize(authType, tokenKeyOrUsername, password = '', contentType = 'json') {
+    if (!['App', 'Basic', 'IBSSO'].includes(authType)) {
+        throw new Error('Invalid authorization type.')
+    }
+    if (authType === 'Basic') {
+        tokenKeyOrUsername = Buffer.from(`${tokenKeyOrUsername}:${password}`).toString('base64')
+    }
+    let accept = 'application/json'
+    if (contentType === 'xml') {
+        accept = 'application/xml'
+    }
+    return axios.create({
+        headers: {
+            'Authorization': `${authType} ${tokenKeyOrUsername}`,
+            'Content-Type': accept,
+            'Accept': accept
+        }
+    });
+}
+
+/**
+ * Axios returns a lengthy error message. Trim it down to just the result data.
+ * 
+ * @private
+ * @param {*} error 
+ * @returns {*} 
+ */
+function trimError(error) {
+    let errorValue = error;
+    if (error instanceof Error) {
+        if (error.response) { // This is axios
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            if (error.response.data) {
+                errorValue = error.response.data
+            } else {
+                errorValue = error.response
+            }
+        } else if (error.request) { // This is axios
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
+            errorValue = error.request
+        } else { // Regular error
+            errorValue = error;
+        }
+    }
+
+    return errorValue
+}
 module.exports = {
+    status: status,
+    Settings: Settings,
     SMS: SMS,
 }</code></pre>
         </article>
@@ -185,13 +481,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="SMS.html">SMS</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Settings.html">Settings</a></li><li><a href="SMS.html">SMS</a></li></ul><h3>Global</h3><ul><li><a href="global.html#status">status</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Tue Jun 11 2019 11:14:05 GMT+0800 (Malay Peninsula Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Tue Jun 11 2019 14:27:09 GMT+0800 (Malay Peninsula Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
