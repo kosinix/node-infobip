@@ -85,28 +85,6 @@ class SMS {
     }
 
     /**
-     * Get API status
-     * 
-     * @returns {Object} Axios response.data
-     */
-    async status() {
-        try {
-            let accept = 'application/json'
-            if (this.contentType === 'xml') {
-                accept = 'application/xml'
-            }
-            let response = await axios.get(`${this.baseUrl}/status`, {
-                headers: {
-                    'Accept': accept
-                }
-            });
-            return response.data;
-        } catch (err) {
-            throw trimError(err)
-        }
-    }
-
-    /**
      * Authorize API calls
      * 
      * @param {string} authType 
