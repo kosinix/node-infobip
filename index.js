@@ -93,6 +93,7 @@ class SMS {
         this.axios = axios.create({
             headers: {
                 'Authorization': `${authType} ${tokenKeyOrUsername}`,
+                'Content-Type': accept,
                 'Accept': accept
             }
         });
