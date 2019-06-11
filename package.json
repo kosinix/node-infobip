@@ -1,6 +1,6 @@
 {
   "name": "node-infobip",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Node.js module for infobip api",
   "main": "index.js",
   "scripts": {
