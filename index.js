@@ -6,6 +6,7 @@ const axios = require('axios');
 //// Modules
 const Settings = require('./service/Settings');
 const SMS = require('./service/SMS');
+const TwoFA = require('./service/TwoFA');
 
 /**
  * Checking the service status
@@ -41,4 +42,5 @@ module.exports = {
     status: status,
     Settings: Settings,
     SMS: SMS,
+    TwoFA: TwoFA
 }
