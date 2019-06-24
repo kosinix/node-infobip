@@ -38,7 +38,7 @@ class Settings {
      * 
      * @param {string} accountKey Key used to uniquely identify the account. Use _ as parameter value for your current account or account key for sub accounts.
      * @param {string} baseUrl Infobip personal base URL
-     * @param {number} version API version 1 or 2
+     * @param {number} version API version. The version is overridable on an individual method call level - useful if some methods are still using old version numbers.
      * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
      */
     constructor(accountKey = '_', baseUrl = 'https://api.infobip.com', version = 1, contentType = 'json') {
@@ -68,17 +68,20 @@ class Settings {
      * List all API keys
      * 
      * @param {string} enabled Filter enabled keys. Values: "true" or "false".
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
      */
-    async getApiKeys(enabled = '') {
+    async getApiKeys(enabled = '', version = 1) {
         try {
             if (!this.axios) {
                 throw new Error('Unauthorized API call.')
             }
-
-            let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys`
+            if (!version) {
+                version = this.version
+            }
+            let endPoint = `${this.baseUrl}/settings/${version}/accounts/${this.accountKey}/api-keys`
 
             if (enabled) {
                 endPoint += `?enabled=${enabled}`
@@ -95,20 +98,24 @@ class Settings {
      * Get an API key by its key
      * 
      * @param {string} key Key (unique ID) of the API key.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
      */
-    async getApiKey(key) {
+    async getApiKey(key, version = 1) {
         try {
             if (!this.axios) {
                 throw new Error('Unauthorized API call.')
+            }
+            if (!version) {
+                version = this.version
             }
             if (!key) {
                 throw new Error('Please provide a key.')
             }
 
-            let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys/${key}`
+            let endPoint = `${this.baseUrl}/settings/${version}/accounts/${this.accountKey}/api-keys/${key}`
 
             let response = await this.axios.get(endPoint);
             return response.data;
@@ -122,19 +129,23 @@ class Settings {
      * Get an API key by its public API key
      * 
      * @param {string} key Public API key of the API key.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
      */
-    async getApiKeyByPublicKey(key) {
+    async getApiKeyByPublicKey(key, version = 1) {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
+        }
+        if (!version) {
+            version = this.version
         }
         if (!key) {
             throw new Error('Please provide a key.')
         }
 
-        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys?publicApiKey=${key}`
+        let endPoint = `${this.baseUrl}/settings/${version}/accounts/${this.accountKey}/api-keys?publicApiKey=${key}`
 
         let response = await this.axios.get(endPoint);
         return response.data;
@@ -144,19 +155,23 @@ class Settings {
      * Get an API key by its name
      * 
      * @param {string} name Name of the API key.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
      */
-    async getApiKeyByName(name) {
+    async getApiKeyByName(name, version = 1) {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
+        }
+        if (!version) {
+            version = this.version
         }
         if (!name) {
             throw new Error('Please provide a name.')
         }
 
-        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys?name=${name}`
+        let endPoint = `${this.baseUrl}/settings/${version}/accounts/${this.accountKey}/api-keys?name=${name}`
 
         let response = await this.axios.get(endPoint);
         return response.data;
@@ -166,6 +181,7 @@ class Settings {
      * Create an API key
      * 
      * @param {Object} params The API key properties
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
@@ -180,15 +196,18 @@ class Settings {
      *  ]
      * }))
      */
-    async newApiKey(params) {
+    async newApiKey(params, version = 1) {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
+        }
+        if (!version) {
+            version = this.version
         }
         if (!params) {
             throw new Error('Please provide params.')
         }
 
-        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys`
+        let endPoint = `${this.baseUrl}/settings/${version}/accounts/${this.accountKey}/api-keys`
 
         let response = await this.axios.post(endPoint, params);
         return response.data;
@@ -199,6 +218,7 @@ class Settings {
      * 
      * @param {string} key Key (unique ID) of the API key.
      * @param {Object} params The API key properties to update
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
@@ -210,9 +230,12 @@ class Settings {
      *  "allowedIPs": ['127.0.0.1']
      * }))
      */
-    async updateApiKey(key, params) {
+    async updateApiKey(key, params, version = 1) {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
+        }
+        if (!version) {
+            version = this.version
         }
         if (!key) {
             throw new Error('Please provide a key.')
@@ -221,7 +244,7 @@ class Settings {
             throw new Error('Please provide params.')
         }
 
-        let endPoint = `${this.baseUrl}/settings/${this.version}/accounts/${this.accountKey}/api-keys/${key}`
+        let endPoint = `${this.baseUrl}/settings/${version}/accounts/${this.accountKey}/api-keys/${key}`
 
         let response = await this.axios.put(endPoint, params);
         return response.data;
