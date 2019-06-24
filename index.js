@@ -4,6 +4,7 @@
 const axios = require('axios');
 
 //// Modules
+const Auth = require('./service/Auth');
 const Settings = require('./service/Settings');
 const SMS = require('./service/SMS');
 const TwoFA = require('./service/TwoFA');
@@ -40,6 +41,7 @@ async function status(contentType = 'json', baseUrl = 'https://api.infobip.com')
 
 module.exports = {
     status: status,
+    Auth: Auth,
     Settings: Settings,
     SMS: SMS,
     TwoFA: TwoFA
