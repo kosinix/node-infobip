@@ -3,7 +3,6 @@
 //// External modules
 
 //// Modules
-const authorize = require('./../helpers').authorize;
 const trimError = require('./../helpers').trimError;
 
 /**
@@ -59,12 +58,10 @@ class Settings {
     /**
      * Authorize API calls
      * 
-     * @param {string} authType 
-     * @param {string} tokenKeyOrUsername 
-     * @param {string} password 
+     * @param {Auth} auth 
      */
-    authorize(authType, tokenKeyOrUsername, password = '') {
-        this.axios = authorize(authType, tokenKeyOrUsername, password, this.contentType)
+    authorize(auth) {
+        this.axios = auth.axios(this.contentType)
     }
 
     /**
