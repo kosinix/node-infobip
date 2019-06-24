@@ -142,7 +142,7 @@
                 </td>
             
 
-            <td class="description last">API version 1 or 2.</td>
+            <td class="description last">API version. The version is overridable on an individual method call level - useful if some methods are still using old version numbers.</td>
         </tr>
 
     
@@ -212,7 +212,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line34">line 34</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line24">line 24</a>
     </li></ul></dd>
     
 
@@ -243,7 +243,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Include modulelet infobip = require('node-infobip');// Instantiate classlet twoFA = new infobip.TwoFA()// Authorize using Basic. We can swap this later with App authorizationtwoFA.authorize('Basic', 'username', 'password')// List all API keysconsole.log(await twoFA.getApps())</code></pre>
+    <pre class="prettyprint"><code>// Instantiate classlet twoFA = new infobip.TwoFA()</code></pre>
 
 
 
@@ -273,7 +273,7 @@
     
 
     
-    <h4 class="name" id="authorize"><span class="type-signature"></span>authorize<span class="signature">(authType, tokenKeyOrUsername, password)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="authorize"><span class="type-signature"></span>authorize<span class="signature">(auth)</span><span class="type-signature"></span></h4>
     
 
     
@@ -317,13 +317,13 @@
 
         <tr>
             
-                <td class="name"><code>authType</code></td>
+                <td class="name"><code>auth</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type"><a href="Auth.html">Auth</a></span>
 
 
             
@@ -333,53 +333,7 @@
 
             
 
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>tokenKeyOrUsername</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
+            <td class="description last">Instance of authorization class</td>
         </tr>
 
     
@@ -420,7 +374,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line54">line 54</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -456,7 +410,7 @@
     
 
     
-    <h4 class="name" id="getApp"><span class="type-signature">(async) </span>getApp<span class="signature">(applicationId)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getApp"><span class="type-signature">(async) </span>getApp<span class="signature">(applicationId, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -490,6 +444,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -515,8 +471,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Unique ID of the app.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -557,7 +546,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line94">line 94</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line87">line 87</a>
     </li></ul></dd>
     
 
@@ -631,7 +620,7 @@
     
 
     
-    <h4 class="name" id="getApps"><span class="type-signature">(async) </span>getApps<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getApps"><span class="type-signature">(async) </span>getApps<span class="signature">(version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -648,6 +637,63 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -683,7 +729,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line67">line 67</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -836,7 +882,7 @@
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">number</span>
 
 
             
@@ -852,7 +898,7 @@
                 </td>
             
 
-            <td class="description last">The API version to use. If set to "", uses the instance version.</td>
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -893,7 +939,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line195">line 195</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line199">line 199</a>
     </li></ul></dd>
     
 
@@ -967,7 +1013,7 @@
     
 
     
-    <h4 class="name" id="newApp"><span class="type-signature">(async) </span>newApp<span class="signature">(params)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="newApp"><span class="type-signature">(async) </span>newApp<span class="signature">(params, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -1001,6 +1047,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1026,8 +1074,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">The app properties.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -1068,7 +1149,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line136">line 136</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line133">line 133</a>
     </li></ul></dd>
     
 
@@ -1305,7 +1386,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line238">line 238</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line243">line 243</a>
     </li></ul></dd>
     
 
@@ -1515,7 +1596,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line353">line 353</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line357">line 357</a>
     </li></ul></dd>
     
 
@@ -1725,7 +1806,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line323">line 323</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line327">line 327</a>
     </li></ul></dd>
     
 
@@ -1799,7 +1880,7 @@
     
 
     
-    <h4 class="name" id="updateApp"><span class="type-signature">(async) </span>updateApp<span class="signature">(applicationId, params)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="updateApp"><span class="type-signature">(async) </span>updateApp<span class="signature">(applicationId, params, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -1833,6 +1914,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1858,6 +1941,10 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Unique ID of the app.</td>
         </tr>
@@ -1881,8 +1968,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">The app properties to update.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -1923,7 +2043,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line166">line 166</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line167">line 167</a>
     </li></ul></dd>
     
 
@@ -2174,7 +2294,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line282">line 282</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line286">line 286</a>
     </li></ul></dd>
     
 
@@ -2425,7 +2545,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line384">line 384</a>
+        <a href="service_TwoFA.js.html">service/TwoFA.js</a>, <a href="service_TwoFA.js.html#line388">line 388</a>
     </li></ul></dd>
     
 
@@ -2509,13 +2629,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Settings.html">Settings</a></li><li><a href="SMS.html">SMS</a></li><li><a href="TwoFA.html">TwoFA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#status">status</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Auth.html">Auth</a></li><li><a href="Settings.html">Settings</a></li><li><a href="SMS.html">SMS</a></li><li><a href="TwoFA.html">TwoFA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#status">status</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Wed Jun 12 2019 22:49:20 GMT+0800 (Malay Peninsula Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Mon Jun 24 2019 11:21:25 GMT+0800 (Malay Peninsula Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

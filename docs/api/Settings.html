@@ -171,7 +171,7 @@
                 </td>
             
 
-            <td class="description last">API version 1 or 2</td>
+            <td class="description last">API version. The version is overridable on an individual method call level - useful if some methods are still using old version numbers.</td>
         </tr>
 
     
@@ -241,7 +241,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line45">line 45</a>
+        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line25">line 25</a>
     </li></ul></dd>
     
 
@@ -272,7 +272,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Include modulelet infobip = require('node-infobip');// Instantiate Settings classlet settings = new infobip.Settings()// Authorize using Basic. We can swap this later with App authorizationsettings.authorize('Basic', 'username', 'password')// List all API keysconsole.log(await settings.getApiKeys())// Get API key with property key "abc"console.log(await settings.getApiKey('abc'))// Get API key with property publicApiKey "abc"console.log(await settings.getApiKeyByPublicKey('abc'))// Get API key with property name "live-server"console.log(await settings.getApiKeyByName('live-server'))</code></pre>
+    <pre class="prettyprint"><code>// Instantiate Settings classlet settings = new infobip.Settings()</code></pre>
 
 
 
@@ -302,7 +302,7 @@
     
 
     
-    <h4 class="name" id="authorize"><span class="type-signature"></span>authorize<span class="signature">(authType, tokenKeyOrUsername, password)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="authorize"><span class="type-signature"></span>authorize<span class="signature">(auth)</span><span class="type-signature"></span></h4>
     
 
     
@@ -346,13 +346,13 @@
 
         <tr>
             
-                <td class="name"><code>authType</code></td>
+                <td class="name"><code>auth</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type"><a href="Auth.html">Auth</a></span>
 
 
             
@@ -362,53 +362,7 @@
 
             
 
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>tokenKeyOrUsername</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
+            <td class="description last">Instance of authorization class</td>
         </tr>
 
     
@@ -449,7 +403,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line66">line 66</a>
+        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -485,7 +439,7 @@
     
 
     
-    <h4 class="name" id="getApiKey"><span class="type-signature">(async) </span>getApiKey<span class="signature">(key)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getApiKey"><span class="type-signature">(async) </span>getApiKey<span class="signature">(key, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -519,6 +473,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -544,8 +500,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Key (unique ID) of the API key.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -586,7 +575,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line105">line 105</a>
+        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line95">line 95</a>
     </li></ul></dd>
     
 
@@ -648,6 +637,11 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// Get API key with property key "abc"console.log(await settings.getApiKey('abc'))</code></pre>
+
+
 
         
             
@@ -655,7 +649,7 @@
     
 
     
-    <h4 class="name" id="getApiKeyByName"><span class="type-signature">(async) </span>getApiKeyByName<span class="signature">(name)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getApiKeyByName"><span class="type-signature">(async) </span>getApiKeyByName<span class="signature">(name, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -689,6 +683,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -714,8 +710,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Name of the API key.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -756,7 +785,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line154">line 154</a>
+        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line160">line 160</a>
     </li></ul></dd>
     
 
@@ -818,6 +847,11 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// Get API key with property name "live-server"console.log(await settings.getApiKeyByName('live-server'))</code></pre>
+
+
 
         
             
@@ -825,7 +859,7 @@
     
 
     
-    <h4 class="name" id="getApiKeyByPublicKey"><span class="type-signature">(async) </span>getApiKeyByPublicKey<span class="signature">(key)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getApiKeyByPublicKey"><span class="type-signature">(async) </span>getApiKeyByPublicKey<span class="signature">(key, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -859,6 +893,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -884,8 +920,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Public API key of the API key.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -926,7 +995,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line132">line 132</a>
+        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line130">line 130</a>
     </li></ul></dd>
     
 
@@ -988,6 +1057,11 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// Get API key with property publicApiKey "abc"console.log(await settings.getApiKeyByPublicKey('abc'))</code></pre>
+
+
 
         
             
@@ -995,7 +1069,7 @@
     
 
     
-    <h4 class="name" id="getApiKeys"><span class="type-signature">(async) </span>getApiKeys<span class="signature">(enabled)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getApiKeys"><span class="type-signature">(async) </span>getApiKeys<span class="signature">(enabled, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -1029,6 +1103,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1054,8 +1130,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Filter enabled keys. Values: "true" or "false".</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -1096,7 +1205,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line78">line 78</a>
+        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -1158,6 +1267,11 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// List all API keysconsole.log(await settings.getApiKeys())</code></pre>
+
+
 
         
             
@@ -1165,7 +1279,7 @@
     
 
     
-    <h4 class="name" id="newApiKey"><span class="type-signature">(async) </span>newApiKey<span class="signature">(params)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="newApiKey"><span class="type-signature">(async) </span>newApiKey<span class="signature">(params, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -1199,6 +1313,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1224,8 +1340,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">The API key properties</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -1266,7 +1415,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line186">line 186</a>
+        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line196">line 196</a>
     </li></ul></dd>
     
 
@@ -1340,7 +1489,7 @@
     
 
     
-    <h4 class="name" id="updateApiKey"><span class="type-signature">(async) </span>updateApiKey<span class="signature">(key, params)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="updateApiKey"><span class="type-signature">(async) </span>updateApiKey<span class="signature">(key, params, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -1374,6 +1523,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1399,6 +1550,10 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Key (unique ID) of the API key.</td>
         </tr>
@@ -1422,8 +1577,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">The API key properties to update</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    1
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -1464,7 +1652,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line216">line 216</a>
+        <a href="service_Settings.js.html">service/Settings.js</a>, <a href="service_Settings.js.html#line230">line 230</a>
     </li></ul></dd>
     
 
@@ -1548,13 +1736,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Settings.html">Settings</a></li><li><a href="SMS.html">SMS</a></li><li><a href="TwoFA.html">TwoFA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#status">status</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Auth.html">Auth</a></li><li><a href="Settings.html">Settings</a></li><li><a href="SMS.html">SMS</a></li><li><a href="TwoFA.html">TwoFA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#status">status</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Wed Jun 12 2019 22:49:20 GMT+0800 (Malay Peninsula Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Mon Jun 24 2019 11:21:25 GMT+0800 (Malay Peninsula Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

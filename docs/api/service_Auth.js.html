@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: index.js</title>
+    <title>JSDoc: Source: service/Auth.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: index.js</h1>
+    <h1 class="page-title">Source: service/Auth.js</h1>
 
     
 
@@ -32,48 +32,68 @@
 const axios = require('axios');
 
 //// Modules
-const Auth = require('./service/Auth');
-const Settings = require('./service/Settings');
-const SMS = require('./service/SMS');
-const TwoFA = require('./service/TwoFA');
+
 
 /**
- * Checking the service status
+ * Class for Authentication service
  * 
- * @example
- * let infobip = require('node-infobip');
- * let status = await infobip.status();
- * console.log(status);
+ * @example 
+ * // Basic authorization
+ * let auth = new infobip.Auth('Basic', 'username', 'password');
  * 
- * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
- * @param {string} baseUrl Infobip personal base URL
+ * // API key authorization
+ * auth = new infobip.Auth('App', 'public-api-key');
  * 
- * @returns {string} String in JSON or XML
+ * // Token authorization
+ * auth = new infobip.Auth('IBSSO', 'token');
+ * 
+ * // Passing auth to services, for example SMS
+ * let sms = new infobip.SMS();
+ * sms.authorize(auth);
  */
-async function status(contentType = 'json', baseUrl = 'https://api.infobip.com') {
-    try {
+class Auth {
+    /**
+     * Instantiate Auth class
+     * 
+     * @param {string} authType 
+     * @param {string} tokenKeyOrUsername 
+     * @param {string} password 
+     * @throws {Error}
+     */
+    constructor(authType, tokenKeyOrUsername, password = '') {
+        if (!['App', 'Basic', 'IBSSO'].includes(authType)) {
+            throw new Error('Invalid authorization type.')
+        }
+        if (authType === 'Basic') {
+            tokenKeyOrUsername = Buffer.from(`${tokenKeyOrUsername}:${password}`).toString('base64')
+        }
+
+        this.authType = authType
+        this.tokenKeyOrUsername = tokenKeyOrUsername
+    }
+
+    /**
+     * Create an axios instance
+     * 
+     * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
+     */
+    axios(contentType) {
         let accept = 'application/json'
         if (contentType === 'xml') {
             accept = 'application/xml'
         }
-        let response = await axios.get(`${baseUrl}/status`, {
+        return axios.create({
             headers: {
+                'Authorization': `${this.authType} ${this.tokenKeyOrUsername}`,
+                'Content-Type': accept,
                 'Accept': accept
             }
         });
-        return response.data;
-    } catch (err) {
-        throw trimError(err)
     }
+
 }
 
-module.exports = {
-    status: status,
-    Auth: Auth,
-    Settings: Settings,
-    SMS: SMS,
-    TwoFA: TwoFA
-}</code></pre>
+module.exports = Auth</code></pre>
         </article>
     </section>
 

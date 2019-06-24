@@ -1,11 +1,11 @@
 {
   "name": "node-infobip",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Node.js module for infobip api",
   "main": "index.js",
   "scripts": {
     "test": "node test/test.js",
-    "docs": "jsdoc -d docs/api index.js service/Settings.js service/SMS.js service/TwoFA.js"
+    "docs": "jsdoc -d docs/api index.js service/Auth.js service/Settings.js service/SMS.js service/TwoFA.js"
   },
   "repository": {
     "type": "git",

@@ -3,24 +3,14 @@
 //// External modules
 
 //// Modules
-const authorize = require('./../helpers').authorize;
 const trimError = require('./../helpers').trimError;
 
 /**
  * Class for 2-Factor Authentication
  * 
  * @example 
- * // Include module
- * let infobip = require('node-infobip');
- * 
  * // Instantiate class
  * let twoFA = new infobip.TwoFA()
- * 
- * // Authorize using Basic. We can swap this later with App authorization
- * twoFA.authorize('Basic', 'username', 'password')
- * 
- * // List all API keys
- * console.log(await twoFA.getApps())
  */
 class TwoFA {
 
@@ -28,7 +18,7 @@ class TwoFA {
      * Instantiate class
      * 
      * @param {string} baseUrl Infobip personal base URL.
-     * @param {number} version API version 1 or 2.
+     * @param {number} version API version. The version is overridable on an individual method call level - useful if some methods are still using old version numbers.
      * @param {string} contentType The type of data the API returns. Values: "json" or "xml".
      */
     constructor(baseUrl = 'https://api.infobip.com', version = 2, contentType = 'json') {
@@ -47,16 +37,16 @@ class TwoFA {
     /**
      * Authorize API calls
      * 
-     * @param {string} authType 
-     * @param {string} tokenKeyOrUsername 
-     * @param {string} password 
+     * @param {Auth} auth Instance of authorization class
      */
-    authorize(authType, tokenKeyOrUsername, password = '') {
-        this.axios = authorize(authType, tokenKeyOrUsername, password, this.contentType)
+    authorize(auth) {
+        this.axios = auth.axios(this.contentType)
     }
 
     /**
      * List all 2FA applications
+     * 
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
@@ -64,13 +54,15 @@ class TwoFA {
      * @example
      * console.log(await twoFA.getApps())
      */
-    async getApps() {
+    async getApps(version = 1) {
         try {
             if (!this.axios) {
                 throw new Error('Unauthorized API call.')
             }
-
-            let endPoint = `${this.baseUrl}/2fa/${this.version}/applications`
+            if (!version) {
+                version = this.version
+            }
+            let endPoint = `${this.baseUrl}/2fa/${version}/applications`
 
             let response = await this.axios.get(endPoint);
             return response.data;
@@ -84,6 +76,7 @@ class TwoFA {
      * Get a 2FA application by its applicationId
      * 
      * @param {string} applicationId Unique ID of the app.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
@@ -91,16 +84,19 @@ class TwoFA {
      * @example
      * console.log(await twoFA.getApp('797493BB352B7B84588F108CEBAAE43E '))
      */
-    async getApp(applicationId) {
+    async getApp(applicationId, version = 1) {
         try {
             if (!this.axios) {
                 throw new Error('Unauthorized API call.')
+            }
+            if (!version) {
+                version = this.version
             }
             if (!applicationId) {
                 throw new Error('Please provide an applicationId.')
             }
 
-            let endPoint = `${this.baseUrl}/2fa/${this.version}/applications/${applicationId}`
+            let endPoint = `${this.baseUrl}/2fa/${version}/applications/${applicationId}`
 
             let response = await this.axios.get(endPoint);
             return response.data;
@@ -114,6 +110,7 @@ class TwoFA {
      * Create an application
      * 
      * @param {Object} params The app properties.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
@@ -133,15 +130,18 @@ class TwoFA {
      *  "enabled": true
      * }))
      */
-    async newApp(params) {
+    async newApp(params, version = 1) {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
+        }
+        if (!version) {
+            version = this.version
         }
         if (!params) {
             throw new Error('Please provide params.')
         }
 
-        let endPoint = `${this.baseUrl}/2fa/${this.version}/applications`
+        let endPoint = `${this.baseUrl}/2fa/${version}/applications`
 
         let response = await this.axios.post(endPoint, params);
         return response.data;
@@ -152,6 +152,7 @@ class TwoFA {
      * 
      * @param {string} applicationId Unique ID of the app.
      * @param {Object} params The app properties to update.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error} Unauthorized API call.
@@ -163,9 +164,12 @@ class TwoFA {
      *  "enabled": false
      * }))
      */
-    async updateApp(applicationId, params) {
+    async updateApp(applicationId, params, version = 1) {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
+        }
+        if (!version) {
+            version = this.version
         }
         if (!applicationId) {
             throw new Error('Please provide an applicationId.')
@@ -174,7 +178,7 @@ class TwoFA {
             throw new Error('Please provide params.')
         }
 
-        let endPoint = `${this.baseUrl}/2fa/${this.version}/applications/${applicationId}`
+        let endPoint = `${this.baseUrl}/2fa/${version}/applications/${applicationId}`
 
         let response = await this.axios.put(endPoint, params);
         return response.data;
@@ -184,7 +188,7 @@ class TwoFA {
      * List all templates
      * 
      * @param {string} applicationId Unique ID of the app.
-     * @param {Object} version The API version to use. If set to "", uses the instance version.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
      * @throws {Error}
@@ -197,12 +201,13 @@ class TwoFA {
             if (!this.axios) {
                 throw new Error('Unauthorized API call.')
             }
-            if (!applicationId) {
-                throw new Error('Please provide an applicationId.')
-            }
             if (!version) {
                 version = this.version
             }
+            if (!applicationId) {
+                throw new Error('Please provide an applicationId.')
+            }
+            
             let endPoint = `${this.baseUrl}/2fa/${version}/applications/${applicationId}/messages`
 
             let response = await this.axios.get(endPoint);
@@ -239,14 +244,14 @@ class TwoFA {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
         }
+        if (!version) {
+            version = this.version
+        }
         if (!applicationId) {
             throw new Error('Please provide an applicationId.')
         }
         if (!params) {
             throw new Error('Please provide params.')
-        }
-        if (!version) {
-            version = this.version
         }
 
         let endPoint = `${this.baseUrl}/2fa/${version}/applications/${applicationId}/messages`
@@ -261,7 +266,6 @@ class TwoFA {
      * @param {string} applicationId Unique ID of the app.
      * @param {Object} params The template properties.
      * @param {Object} version The API version to use. If set to "", uses the instance version.
-     * 
      * 
      * @returns {Object}
      * @throws {Error} Unauthorized API call.
@@ -283,6 +287,9 @@ class TwoFA {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
         }
+        if (!version) {
+            version = this.version
+        }
         if (!applicationId) {
             throw new Error('Please provide an applicationId.')
         }
@@ -291,9 +298,6 @@ class TwoFA {
         }
         if (!params) {
             throw new Error('Please provide params.')
-        }
-        if (!version) {
-            version = this.version
         }
 
         let endPoint = `${this.baseUrl}/2fa/${version}/applications/${applicationId}/messages/${messageId}`
@@ -324,11 +328,11 @@ class TwoFA {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
         }
-        if (!params) {
-            throw new Error('Please provide params.')
-        }
         if (!version) {
             version = this.version
+        }
+        if (!params) {
+            throw new Error('Please provide params.')
         }
 
         let endPoint = `${this.baseUrl}/2fa/${version}/pin`
@@ -354,11 +358,11 @@ class TwoFA {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
         }
-        if (!pinId) {
-            throw new Error('Please provide a pinId.')
-        }
         if (!version) {
             version = this.version
+        }
+        if (!pinId) {
+            throw new Error('Please provide a pinId.')
         }
 
         let endPoint = `${this.baseUrl}/2fa/${version}/pin/${pinId}/resend`
@@ -385,14 +389,14 @@ class TwoFA {
         if (!this.axios) {
             throw new Error('Unauthorized API call.')
         }
+        if (!version) {
+            version = this.version
+        }
         if (!pinId) {
             throw new Error('Please provide a pinId.')
         }
         if (!pin) {
             throw new Error('Please provide a pin.')
-        }
-        if (!version) {
-            version = this.version
         }
 
         let endPoint = `${this.baseUrl}/2fa/${version}/pin/${pinId}/verify`

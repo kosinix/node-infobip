@@ -3,7 +3,6 @@
 //// External modules
 
 //// Modules
-const authorize = require('./../helpers').authorize;
 const trimError = require('./../helpers').trimError;
 
 
@@ -11,26 +10,11 @@ const trimError = require('./../helpers').trimError;
  * Class for SMS service
  * 
  * @example 
- * // Include module
- * let infobip = require('node-infobip');
- * 
  * // Instantiate SMS class. Specify Sender ID and Base URL
  * let sms = new infobip.SMS('CompanyA', 'https://api.infobip.com');
  * 
- * // Basic authorization
- * sms.authorize('Basic', 'username', 'password');
- * 
- * // API key authorization
- * sms.authorize('App', 'public-api-key');
- * 
- * // Token authorization
- * sms.authorize('IBSSO', 'token');
- * 
- * // Send single text
- * await sms.single('631234567890', 'Hello there!');
- * 
- * // Send single text to multiple recipients
- * await sms.single(['631234567890', '631234567891'], 'Hello there!');
+ * // Return data in XML instead of JSON
+ * let sms = new infobip.SMS('CompanyA', 'https://api.infobip.com', 1, 'xml');
  * 
  */
 class SMS {
@@ -39,7 +23,7 @@ class SMS {
      * 
      * @param {string} defaultFrom Represents a sender ID which can be alphanumeric or numeric
      * @param {string} baseUrl Infobip personal base URL
-     * @param {number} version API version 1 or 2
+     * @param {number} version API version. The version is overridable on an individual method call level - useful if some methods are still using old version numbers.
      * @param {string} contentType The type of data the API returns. Values: "json" or "xml"
      */
     constructor(defaultFrom = 'INFO', baseUrl = 'https://api.infobip.com', version = 1, contentType = 'json') {
@@ -59,12 +43,10 @@ class SMS {
     /**
      * Authorize API calls
      * 
-     * @param {string} authType 
-     * @param {string} tokenKeyOrUsername 
-     * @param {string} password 
+     * @param {Auth} auth Instance of authorization class
      */
-    authorize(authType, tokenKeyOrUsername, password = '') {
-        this.axios = authorize(authType, tokenKeyOrUsername, password, this.contentType)
+    authorize(auth) {
+        this.axios = auth.axios(this.contentType)
     }
 
     /**
@@ -75,19 +57,30 @@ class SMS {
      * @param {string|Array} to Destination addresses must be in international format (example: 41793026727)
      * @param {string} text Text of the message that will be sent.
      * @param {string} from Represents sender ID and it can be alphanumeric or numeric. Alphanumeric sender ID length should be between 3 and 11 characters (example: CompanyName). Numeric sender ID length should be between 3 and 14 characters.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object} Axios response.data
+     * 
+     * @example
+     * // Simple text
+     * console.log(await sms.single('41793026727', 'Test sms.'))
+     * 
+     * // Multi numbers
+     * console.log(await sms.single(['41793026727', '41793026728'], 'Test sms.'))
      */
-    async single(to, text, from = '') {
+    async single(to, text, from = '', version = 2) {
         try {
             if (!this.axios) {
                 throw new Error('Unauthorized API call.')
+            }
+            if (!version) {
+                version = this.version
             }
             if (!from) {
                 from = this.defaultFrom;
             }
             let response = await this.axios.post(
-                `${this.baseUrl}/sms/${this.version}/text/single`,
+                `${this.baseUrl}/sms/${version}/text/single`,
                 {
                     from: from,
                     to: to,
@@ -105,15 +98,19 @@ class SMS {
      * Getting a report via message ID
      * 
      * @param {string} messageId The ID that uniquely identifies the message sent.
+     * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object} Axios response.data
      */
-    async getReportByMessageId(messageId) {
+    async getReportByMessageId(messageId, version = 2) {
         try {
             if (!this.axios) {
                 throw new Error('Unauthorized API call.')
             }
-            let response = await this.axios.get(`${this.baseUrl}/sms/${this.version}/reports?messageId=${messageId}`);
+            if (!version) {
+                version = this.version
+            }
+            let response = await this.axios.get(`${this.baseUrl}/sms/${version}/reports?messageId=${messageId}`);
             return response.data;
         } catch (err) {
             throw trimError(err)

@@ -171,7 +171,7 @@
                 </td>
             
 
-            <td class="description last">API version 1 or 2</td>
+            <td class="description last">API version. The version is overridable on an individual method call level - useful if some methods are still using old version numbers.</td>
         </tr>
 
     
@@ -241,7 +241,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_SMS.js.html">service/SMS.js</a>, <a href="service_SMS.js.html#line45">line 45</a>
+        <a href="service_SMS.js.html">service/SMS.js</a>, <a href="service_SMS.js.html#line29">line 29</a>
     </li></ul></dd>
     
 
@@ -272,7 +272,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Include modulelet infobip = require('node-infobip');// Instantiate SMS class. Specify Sender ID and Base URLlet sms = new infobip.SMS('CompanyA', 'https://api.infobip.com');// Basic authorizationsms.authorize('Basic', 'username', 'password');// API key authorizationsms.authorize('App', 'public-api-key');// Token authorizationsms.authorize('IBSSO', 'token');// Send single textawait sms.single('631234567890', 'Hello there!');// Send single text to multiple recipientsawait sms.single(['631234567890', '631234567891'], 'Hello there!');</code></pre>
+    <pre class="prettyprint"><code>// Instantiate SMS class. Specify Sender ID and Base URLlet sms = new infobip.SMS('CompanyA', 'https://api.infobip.com');// Return data in XML instead of JSONlet sms = new infobip.SMS('CompanyA', 'https://api.infobip.com', 1, 'xml');</code></pre>
 
 
 
@@ -302,7 +302,7 @@
     
 
     
-    <h4 class="name" id="authorize"><span class="type-signature"></span>authorize<span class="signature">(authType, tokenKeyOrUsername, password)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="authorize"><span class="type-signature"></span>authorize<span class="signature">(auth)</span><span class="type-signature"></span></h4>
     
 
     
@@ -346,13 +346,13 @@
 
         <tr>
             
-                <td class="name"><code>authType</code></td>
+                <td class="name"><code>auth</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type"><a href="Auth.html">Auth</a></span>
 
 
             
@@ -362,53 +362,7 @@
 
             
 
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>tokenKeyOrUsername</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>password</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
+            <td class="description last">Instance of authorization class</td>
         </tr>
 
     
@@ -449,7 +403,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_SMS.js.html">service/SMS.js</a>, <a href="service_SMS.js.html#line66">line 66</a>
+        <a href="service_SMS.js.html">service/SMS.js</a>, <a href="service_SMS.js.html#line48">line 48</a>
     </li></ul></dd>
     
 
@@ -485,7 +439,7 @@
     
 
     
-    <h4 class="name" id="getReportByMessageId"><span class="type-signature">(async) </span>getReportByMessageId<span class="signature">(messageId)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getReportByMessageId"><span class="type-signature">(async) </span>getReportByMessageId<span class="signature">(messageId, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -519,6 +473,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -544,8 +500,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">The ID that uniquely identifies the message sent.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    2
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -586,7 +575,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_SMS.js.html">service/SMS.js</a>, <a href="service_SMS.js.html#line111">line 111</a>
+        <a href="service_SMS.js.html">service/SMS.js</a>, <a href="service_SMS.js.html#line105">line 105</a>
     </li></ul></dd>
     
 
@@ -644,7 +633,7 @@
     
 
     
-    <h4 class="name" id="single"><span class="type-signature">(async) </span>single<span class="signature">(to, text, from)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="single"><span class="type-signature">(async) </span>single<span class="signature">(to, text, from, version)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -678,6 +667,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -706,6 +697,10 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Destination addresses must be in international format (example: 41793026727)</td>
         </tr>
@@ -728,6 +723,10 @@
 
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last">Text of the message that will be sent.</td>
@@ -752,8 +751,41 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last">Represents sender ID and it can be alphanumeric or numeric. Alphanumeric sender ID length should be between 3 and 11 characters (example: CompanyName). Numeric sender ID length should be between 3 and 14 characters.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>version</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    2
+                
+                </td>
+            
+
+            <td class="description last">The API version to use. If set to "", will use the instance version.</td>
         </tr>
 
     
@@ -794,7 +826,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="service_SMS.js.html">service/SMS.js</a>, <a href="service_SMS.js.html#line81">line 81</a>
+        <a href="service_SMS.js.html">service/SMS.js</a>, <a href="service_SMS.js.html#line71">line 71</a>
     </li></ul></dd>
     
 
@@ -845,6 +877,11 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// Simple textconsole.log(await sms.single('41793026727', 'Test sms.'))// Multi numbersconsole.log(await sms.single(['41793026727', '41793026728'], 'Test sms.'))</code></pre>
+
+
 
         
     
@@ -862,13 +899,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Settings.html">Settings</a></li><li><a href="SMS.html">SMS</a></li><li><a href="TwoFA.html">TwoFA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#status">status</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Auth.html">Auth</a></li><li><a href="Settings.html">Settings</a></li><li><a href="SMS.html">SMS</a></li><li><a href="TwoFA.html">TwoFA</a></li></ul><h3>Global</h3><ul><li><a href="global.html#status">status</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Wed Jun 12 2019 22:49:20 GMT+0800 (Malay Peninsula Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.2</a> on Mon Jun 24 2019 11:21:25 GMT+0800 (Malay Peninsula Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
