@@ -3,8 +3,12 @@ let infobip = require('../index');
 let main = async () => {
     console.log(await infobip.status())
 
+    // Authorize API calls
+    let auth = new infobip.Auth('Basic', 'username', 'pass')
+
+    // Settings service
     let settings = new infobip.Settings()
-    settings.authorize('Basic', 'username', 'pass')
+    settings.authorize(auth) // Pass authorization to settings
     // console.log(await settings.getApiKeys())
     // console.log(await settings.getApiKey('key'))
     // console.log(await settings.getApiKeyByPublicKey('public-api-key'))
