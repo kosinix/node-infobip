@@ -9,17 +9,8 @@ const trimError = require('./../helpers').trimError;
  * Class for 2-Factor Authentication
  * 
  * @example 
- * // Include module
- * let infobip = require('node-infobip');
- * 
  * // Instantiate class
  * let twoFA = new infobip.TwoFA()
- * 
- * // Authorize using Basic. We can swap this later with App authorization
- * twoFA.authorize('Basic', 'username', 'password')
- * 
- * // List all API keys
- * console.log(await twoFA.getApps())
  */
 class TwoFA {
 
@@ -46,7 +37,7 @@ class TwoFA {
     /**
      * Authorize API calls
      * 
-     * @param {Auth} auth 
+     * @param {Auth} auth Instance of authorization class
      */
     authorize(auth) {
         this.axios = auth.axios(this.contentType)
@@ -85,7 +76,6 @@ class TwoFA {
      * Get a 2FA application by its applicationId
      * 
      * @param {string} applicationId Unique ID of the app.
-     * 
      * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}
@@ -198,7 +188,6 @@ class TwoFA {
      * List all templates
      * 
      * @param {string} applicationId Unique ID of the app.
-     * @param {Object} version The API version to use. If set to "", uses the instance version.
      * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object}

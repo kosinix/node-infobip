@@ -9,27 +9,8 @@ const trimError = require('./../helpers').trimError;
  * Class for Account service use in managing API keys 
  * 
  * @example 
- * // Include module
- * let infobip = require('node-infobip');
- * 
  * // Instantiate Settings class
  * let settings = new infobip.Settings()
- * 
- * // Authorize using Basic. We can swap this later with App authorization
- * settings.authorize('Basic', 'username', 'password')
- * 
- * // List all API keys
- * console.log(await settings.getApiKeys())
- * 
- * // Get API key with property key "abc"
- * console.log(await settings.getApiKey('abc'))
- * 
- * // Get API key with property publicApiKey "abc"
- * console.log(await settings.getApiKeyByPublicKey('abc'))
- * 
- * // Get API key with property name "live-server"
- * console.log(await settings.getApiKeyByName('live-server'))
- * 
  */
 class Settings {
 
@@ -58,7 +39,7 @@ class Settings {
     /**
      * Authorize API calls
      * 
-     * @param {Auth} auth 
+     * @param {Auth} auth Instance of authorization class
      */
     authorize(auth) {
         this.axios = auth.axios(this.contentType)
@@ -72,6 +53,10 @@ class Settings {
      * 
      * @returns {Object}
      * @throws {Error}
+     * 
+     * @example
+     * // List all API keys
+     * console.log(await settings.getApiKeys())
      */
     async getApiKeys(enabled = '', version = 1) {
         try {
@@ -102,6 +87,10 @@ class Settings {
      * 
      * @returns {Object}
      * @throws {Error}
+     * 
+     * @example
+     * // Get API key with property key "abc"
+     * console.log(await settings.getApiKey('abc'))
      */
     async getApiKey(key, version = 1) {
         try {
@@ -133,6 +122,10 @@ class Settings {
      * 
      * @returns {Object}
      * @throws {Error}
+     * 
+     * @example
+     * // Get API key with property publicApiKey "abc"
+     * console.log(await settings.getApiKeyByPublicKey('abc'))
      */
     async getApiKeyByPublicKey(key, version = 1) {
         if (!this.axios) {
@@ -159,6 +152,10 @@ class Settings {
      * 
      * @returns {Object}
      * @throws {Error}
+     * 
+     * @example
+     * // Get API key with property name "live-server"
+     * console.log(await settings.getApiKeyByName('live-server'))
      */
     async getApiKeyByName(name, version = 1) {
         if (!this.axios) {

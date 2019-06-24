@@ -10,26 +10,11 @@ const trimError = require('./../helpers').trimError;
  * Class for SMS service
  * 
  * @example 
- * // Include module
- * let infobip = require('node-infobip');
- * 
  * // Instantiate SMS class. Specify Sender ID and Base URL
  * let sms = new infobip.SMS('CompanyA', 'https://api.infobip.com');
  * 
- * // Basic authorization
- * sms.authorize('Basic', 'username', 'password');
- * 
- * // API key authorization
- * sms.authorize('App', 'public-api-key');
- * 
- * // Token authorization
- * sms.authorize('IBSSO', 'token');
- * 
- * // Send single text
- * await sms.single('631234567890', 'Hello there!');
- * 
- * // Send single text to multiple recipients
- * await sms.single(['631234567890', '631234567891'], 'Hello there!');
+ * // Return data in XML instead of JSON
+ * let sms = new infobip.SMS('CompanyA', 'https://api.infobip.com', 1, 'xml');
  * 
  */
 class SMS {
@@ -58,7 +43,7 @@ class SMS {
     /**
      * Authorize API calls
      * 
-     * @param {Auth} auth 
+     * @param {Auth} auth Instance of authorization class
      */
     authorize(auth) {
         this.axios = auth.axios(this.contentType)
@@ -75,6 +60,13 @@ class SMS {
      * @param {number} version The API version to use. If set to "", will use the instance version.
      * 
      * @returns {Object} Axios response.data
+     * 
+     * @example
+     * // Simple text
+     * console.log(await sms.single('41793026727', 'Test sms.'))
+     * 
+     * // Multi numbers
+     * console.log(await sms.single(['41793026727', '41793026728'], 'Test sms.'))
      */
     async single(to, text, from = '', version = 2) {
         try {
