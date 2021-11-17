@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/kosinix/node-infobip#readme",
   "dependencies": {
-    "axios": "^0.19.0"
+    "axios": "^0.24.0"
   },
   "devDependencies": {
     "jsdoc": "^3.6.2"
